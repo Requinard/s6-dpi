@@ -16,5 +16,6 @@ enum class UserModelType {
     SUPPLIER,
     MANAGER,
     PACKER,
-    USER
+    USER,
+    SYSTEM
 }

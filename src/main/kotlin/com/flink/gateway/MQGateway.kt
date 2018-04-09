@@ -1,7 +1,6 @@
 package com.flink.gateway
 
 import com.flink.gateway.Exchanges.PRODUCT_EXCHANGE
-import com.flink.gateway.Queues.LOGS_DB_QUEUE
 import com.flink.gateway.Queues.PRODUCT_PICK_TO_WAREHOUSE
 import com.flink.gateway.Routes.EMPTY
 import com.flink.gateway.Routes.IMPORT_MANIFEST
@@ -35,7 +34,7 @@ class MQGateway(
         }.newConnection()
     }
 
-    val channel by lazy { connection.createChannel() }
+    val channel by lazy { connection.createChannel().apply { basicQos(1) } }
 
     init {
         if (channel.isOpen) {
