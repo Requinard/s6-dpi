@@ -7,7 +7,7 @@ import com.flink.utils.gsonUtils
 
 object LogOutputConsumer {
     @JvmStatic
-    fun main(args: Array<String>) {
+    fun main(args: Array<String> = emptyArray()) {
         val queueName = mqGateway.createExclusiveQueue(LOG_EXCHANGE)
 
         mqGateway.consume(queueName, {

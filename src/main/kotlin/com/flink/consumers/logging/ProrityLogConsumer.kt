@@ -13,8 +13,9 @@ import com.flink.utils.gsonUtils
  */
 object ProrityLogConsumer {
     val mqGateway by lazy { MQGateway() }
+
     @JvmStatic
-    fun main(args: Array<String>) {
+    fun main(args: Array<String> = emptyArray()) {
         mqGateway.consume(LOGS_HIGH_PRIORTY, {
             val logModel = gsonUtils.decode<LogModel>(it)
 

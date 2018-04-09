@@ -11,7 +11,7 @@ import com.flink.utils.gsonUtils
  */
 object DatabaseLoggerConsumer {
     @JvmStatic
-    fun main(args: Array<String>) {
+    fun main(args: Array<String> = emptyArray()) {
         mqGateway.consume(Queues.LOGS_DB_QUEUE, {
             val logModel = gsonUtils.decode<LogModel>(it)
 
