@@ -1,17 +1,21 @@
 package com.flink.models
 
 import com.flink.models.InstanceStatus.ORDERED
+import com.flink.utils.now
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
+import java.sql.Timestamp
+import java.time.Instant
 import java.util.UUID
 
 data class ProductInstanceModel(
-        val location: String,
+        var location: String,
         val product: ProductModel
 ) {
     val id: UUID = UUID.randomUUID()
-    val created: DateTime = DateTime.now(DateTimeZone.UTC)
+    val created = now()
     val status: InstanceStatus = ORDERED
+    var warehouse: LocationModel? = null
 }
 
 enum class InstanceStatus {

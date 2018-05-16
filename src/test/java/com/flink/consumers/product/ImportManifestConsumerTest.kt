@@ -1,29 +1,30 @@
 package com.flink.consumers.product
 
+import com.flink.gateway.DBGateway
 import com.flink.gateway.Exchanges.PRODUCT_EXCHANGE
 import com.flink.gateway.MQGateway
 import com.flink.gateway.Routes.IMPORT_MANIFEST
+import com.flink.models.ProductInstanceModel
 import org.junit.Before
 import org.junit.Test
-import java.util.UUID
 
 
 class ImportManifestConsumerTest {
     lateinit var mqGateway: MQGateway
+    lateinit var dbGateway: DBGateway
 
     @Before
     fun setup() {
         mqGateway = MQGateway()
+        dbGateway = DBGateway()
     }
 
     @Test
     fun basicPublish() {
-        val items1 = (0..100).map { UUID.randomUUID() }
-        val items2 = (0..100).map { UUID.randomUUID() }
-        val items3 = (0..500).map { UUID.randomUUID() }
+        val items = dbGateway.productDatabase.find()
 
-        mqGateway.publish(PRODUCT_EXCHANGE, items1, IMPORT_MANIFEST)
-        mqGateway.publish(PRODUCT_EXCHANGE, items2, IMPORT_MANIFEST)
-        mqGateway.publish(PRODUCT_EXCHANGE, items3, IMPORT_MANIFEST)
+        items.toList()
+                .map { model -> (0..100).map { ProductInstanceModel("NONE", model) } }
+                .map { mqGateway.publish(PRODUCT_EXCHANGE, it, IMPORT_MANIFEST) }
     }
 }

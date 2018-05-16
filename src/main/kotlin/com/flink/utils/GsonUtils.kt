@@ -1,7 +1,7 @@
 package com.flink.utils
 
 import com.google.gson.Gson
-import java.io.Serializable
+import com.google.gson.reflect.TypeToken
 
 object gsonUtils {
     val gson = Gson()
@@ -10,3 +10,6 @@ object gsonUtils {
     inline fun encode(obj: Any) = this.gson.toJson(obj)
     inline fun <reified T> encodeTyped(obj: Any) = this.gson.toJson(obj, T::class.java)
 }
+
+inline fun <reified T> Gson.fromJson(json: String) = this.fromJson<T>(json, object : TypeToken<T>() {}.type)
+inline fun <reified T> Gson.toJson(obj: Any) = this.toJson(obj, object : TypeToken<T>() {}.type)

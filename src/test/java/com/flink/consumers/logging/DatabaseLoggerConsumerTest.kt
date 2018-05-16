@@ -28,7 +28,7 @@ class DatabaseLoggerConsumerTest {
 
     @Test
     fun bigPublish() {
-        for (i in 0..100000) {
+        for (i in 0..100_000) {
             mqGateway.publish(LOG_EXCHANGE, LogModel(user, "Message $i"), EMPTY)
         }
     }
