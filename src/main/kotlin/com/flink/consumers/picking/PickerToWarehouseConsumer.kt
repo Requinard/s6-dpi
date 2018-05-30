@@ -36,7 +36,7 @@ object PickerToWarehouseConsumer {
                 product.warehouse = warehouse
                 product.status = STORED
 
-                dbGateway.productInstanceDatabase.updateOne(product)
+                dbGateway.productInstanceDatabase.insertOne(product)
             }
         })
     }

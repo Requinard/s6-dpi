@@ -1,10 +1,16 @@
 package com.flink.gateway
 
 import com.flink.gateway.Exchanges.PRODUCT_EXCHANGE
+import com.flink.gateway.Exchanges.QUERY_EXCHANGE
 import com.flink.gateway.Queues.PRODUCT_PICK_TO_WAREHOUSE
+import com.flink.gateway.Queues.QUERY_ITEM
+import com.flink.gateway.Queues.QUERY_RETURN
+import com.flink.gateway.Queues.QUERY_START
 import com.flink.gateway.Routes.EMPTY
 import com.flink.gateway.Routes.IMPORT_MANIFEST
+import com.flink.gateway.Routes.ITEM
 import com.flink.gateway.Routes.PICKER_MOVEMENT
+import com.flink.gateway.Routes.SPLIT
 import com.flink.utils.gsonUtils
 import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.AMQP.BasicProperties
@@ -14,6 +20,7 @@ import com.rabbitmq.client.BuiltinExchangeType.FANOUT
 import com.rabbitmq.client.ConnectionFactory
 import com.rabbitmq.client.DefaultConsumer
 import com.rabbitmq.client.Envelope
+import com.sun.org.apache.bcel.internal.generic.RETURN
 
 class MQGateway(
         val username: String = "user",
@@ -45,6 +52,7 @@ class MQGateway(
                 exchangeDeclare(Exchanges.LOG_EXCHANGE, FANOUT)
                 exchangeDeclare(Exchanges.ERROR_EXCHANGE, DIRECT)
                 exchangeDeclare(PRODUCT_EXCHANGE, DIRECT)
+                exchangeDeclare(QUERY_EXCHANGE, DIRECT)
 
                 // Declare queues
                 queueDeclare(Queues.LOGS_DB_QUEUE, true, false, false, emptyMap())
@@ -52,6 +60,9 @@ class MQGateway(
                 queueDeclare(Queues.ERROR_LOG_EMAIL, true, false, false, emptyMap())
                 queueDeclare(Queues.PRODUCT_IMPORT_MANIFEST, true, false, false, emptyMap())
                 queueDeclare(Queues.PRODUCT_PICK_TO_WAREHOUSE, true, false, false, emptyMap())
+                queueDeclare(Queues.QUERY_START, true, false, false, emptyMap())
+                queueDeclare(Queues.QUERY_ITEM, true, false, false, emptyMap())
+                queueDeclare(Queues.QUERY_RETURN, true, false, false, emptyMap())
 
                 // Bind queues and exchanges
                 queueBind(Queues.LOGS_DB_QUEUE, Exchanges.LOG_EXCHANGE, EMPTY)
@@ -59,6 +70,10 @@ class MQGateway(
                 queueBind(Queues.ERROR_LOG_EMAIL, Exchanges.ERROR_EXCHANGE, Routes.LOG_ERROR)
                 queueBind(Queues.PRODUCT_IMPORT_MANIFEST, PRODUCT_EXCHANGE, IMPORT_MANIFEST)
                 queueBind(PRODUCT_PICK_TO_WAREHOUSE, PRODUCT_EXCHANGE, PICKER_MOVEMENT)
+                queueBind(QUERY_START, QUERY_EXCHANGE, SPLIT)
+                queueBind(QUERY_ITEM, QUERY_EXCHANGE, ITEM)
+                queueBind(QUERY_RETURN, QUERY_EXCHANGE, Routes.RETURN)
+
             }
         }
     }
@@ -119,7 +134,8 @@ class MQGateway(
 enum class Exchanges {
     LOG_EXCHANGE,
     ERROR_EXCHANGE,
-    PRODUCT_EXCHANGE
+    PRODUCT_EXCHANGE,
+    QUERY_EXCHANGE
 }
 
 enum class Queues {
@@ -127,12 +143,18 @@ enum class Queues {
     LOGS_HIGH_PRIORTY,
     ERROR_LOG_EMAIL,
     PRODUCT_IMPORT_MANIFEST,
-    PRODUCT_PICK_TO_WAREHOUSE
+    PRODUCT_PICK_TO_WAREHOUSE,
+    QUERY_START,
+    QUERY_ITEM,
+    QUERY_RETURN
 }
 
 enum class Routes {
     EMPTY,
     LOG_ERROR,
     IMPORT_MANIFEST,
-    PICKER_MOVEMENT
+    PICKER_MOVEMENT,
+    SPLIT,
+    ITEM,
+    RETURN
 }
