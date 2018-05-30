@@ -1,7 +1,11 @@
 package com.flink.gateway
 
+import com.flink.gateway.Exchanges.ORDER_EXCHANGE
 import com.flink.gateway.Exchanges.PRODUCT_EXCHANGE
 import com.flink.gateway.Exchanges.QUERY_EXCHANGE
+import com.flink.gateway.Queues.ORDER_ITEMS
+import com.flink.gateway.Queues.ORDER_RETURN
+import com.flink.gateway.Queues.ORDER_START
 import com.flink.gateway.Queues.PRODUCT_PICK_TO_WAREHOUSE
 import com.flink.gateway.Queues.QUERY_ITEM
 import com.flink.gateway.Queues.QUERY_RETURN
@@ -53,6 +57,7 @@ class MQGateway(
                 exchangeDeclare(Exchanges.ERROR_EXCHANGE, DIRECT)
                 exchangeDeclare(PRODUCT_EXCHANGE, DIRECT)
                 exchangeDeclare(QUERY_EXCHANGE, DIRECT)
+                exchangeDeclare(ORDER_EXCHANGE, DIRECT)
 
                 // Declare queues
                 queueDeclare(Queues.LOGS_DB_QUEUE, true, false, false, emptyMap())
@@ -63,6 +68,9 @@ class MQGateway(
                 queueDeclare(Queues.QUERY_START, true, false, false, emptyMap())
                 queueDeclare(Queues.QUERY_ITEM, true, false, false, emptyMap())
                 queueDeclare(Queues.QUERY_RETURN, true, false, false, emptyMap())
+                queueDeclare(Queues.ORDER_START, true, false, false, emptyMap())
+                queueDeclare(Queues.ORDER_ITEMS, true, false, false, emptyMap())
+                queueDeclare(Queues.ORDER_RETURN, true, false, false, emptyMap())
 
                 // Bind queues and exchanges
                 queueBind(Queues.LOGS_DB_QUEUE, Exchanges.LOG_EXCHANGE, EMPTY)
@@ -72,7 +80,10 @@ class MQGateway(
                 queueBind(PRODUCT_PICK_TO_WAREHOUSE, PRODUCT_EXCHANGE, PICKER_MOVEMENT)
                 queueBind(QUERY_START, QUERY_EXCHANGE, SPLIT)
                 queueBind(QUERY_ITEM, QUERY_EXCHANGE, ITEM)
-                queueBind(QUERY_RETURN, QUERY_EXCHANGE, Routes.RETURN)
+                queueBind(QUERY_RETURN, QUERY_EXCHANGE, Routes.RETURN)          
+                queueBind(ORDER_START, ORDER_EXCHANGE, SPLIT)
+                queueBind(ORDER_ITEMS, ORDER_EXCHANGE, ITEM)
+                queueBind(ORDER_RETURN, ORDER_EXCHANGE, Routes.RETURN)
 
             }
         }
@@ -135,7 +146,8 @@ enum class Exchanges {
     LOG_EXCHANGE,
     ERROR_EXCHANGE,
     PRODUCT_EXCHANGE,
-    QUERY_EXCHANGE
+    QUERY_EXCHANGE,
+    ORDER_EXCHANGE,
 }
 
 enum class Queues {
@@ -146,7 +158,10 @@ enum class Queues {
     PRODUCT_PICK_TO_WAREHOUSE,
     QUERY_START,
     QUERY_ITEM,
-    QUERY_RETURN
+    QUERY_RETURN,
+    ORDER_START,
+    ORDER_ITEMS,
+    ORDER_RETURN
 }
 
 enum class Routes {

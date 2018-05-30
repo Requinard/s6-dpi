@@ -4,6 +4,7 @@ import com.flink.consumers.BaseConsumer
 import com.flink.gateway.Exchanges.QUERY_EXCHANGE
 import com.flink.gateway.Queues
 import com.flink.gateway.Routes
+import com.flink.gateway.Routes.RETURN
 import com.flink.models.LocationModel
 import com.flink.models.LogLevel.ERROR
 import com.flink.models.ProductInstanceModel
@@ -34,15 +35,16 @@ object QueryItemConsumer : BaseConsumer() {
             }
 
             // Retrieve
-            val instances = dbGateway.productInstanceDatabase.aggregate<ProductInstanceModel>(
-                    match(ProductInstanceModel::warehouse eq location.id),
-                    match(ProductInstanceModel::product eq queryModel.product)
+            val instances = dbGateway.productInstanceDatabase.find(
+                    ProductInstanceModel::warehouse eq location.id,
+                    ProductInstanceModel::product eq queryModel.product
             ).toList()
 
             queryModel.count = instances.count()
 
             // Republish
-            mqGateway.publish(QUERY_EXCHANGE, queryModel, Routes.RETURN)
+            mqGateway.publish(QUERY_EXCHANGE.name, queryModel, queryModel.queryId.toString())
+            mqGateway.publish(QUERY_EXCHANGE, queryModel, RETURN)
             log("Query for ${queryModel.location} is done")
         })
     }

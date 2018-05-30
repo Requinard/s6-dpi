@@ -16,7 +16,7 @@ data class ProductInstanceModel(
         var location: String,
         val product: UUID,
         val id: UUID = UUID.randomUUID(),
-        val created: Timestamp = now(),
+        val created: Instant = now(),
         var status: InstanceStatus = ORDERED,
         var warehouse: UUID? = null
 )
