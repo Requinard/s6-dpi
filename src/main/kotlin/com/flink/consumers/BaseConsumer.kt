@@ -15,12 +15,17 @@ abstract class BaseConsumer {
     val mqGateway = MQGateway()
     val dbGateway = DBGateway()
 
-    fun log(message: String, level: LogLevel = INFO) {
-        val user = UserModel("SYSTEM", SYSTEM)
+    fun log(message: String, level: LogLevel = INFO, user: UserModel = UserModel("SYSTEM", SYSTEM)) {
         val log = LogModel(user, message).apply {
             this.level = level
         }
 
         mqGateway.publish(QUERY_EXCHANGE, log, Routes.EMPTY)
+    }
+
+    fun logAsRandomUser(message: String, logLevel: LogLevel = INFO){
+        val user = dbGateway.userDatabase.find().shuffled().first()
+
+        log(message, logLevel, user)
     }
 }

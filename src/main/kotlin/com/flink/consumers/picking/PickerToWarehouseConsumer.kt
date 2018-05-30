@@ -1,6 +1,7 @@
 package com.flink.consumers.picking
 
 import com.beust.klaxon.Klaxon
+import com.flink.consumers.BaseConsumer
 import com.flink.gateway.DBGateway
 import com.flink.gateway.MQGateway
 import com.flink.gateway.Queues.PRODUCT_PICK_TO_WAREHOUSE
@@ -11,9 +12,7 @@ import com.flink.producers.logging.LoggingProducer
 import org.litote.kmongo.updateOne
 import java.util.Random
 
-object PickerToWarehouseConsumer {
-    val mqGateway by lazy { MQGateway() }
-    val dbGateway by lazy { DBGateway() }
+object PickerToWarehouseConsumer : BaseConsumer() {
     val logProducer by lazy { LoggingProducer() }
     val warehouse by lazy { dbGateway.locationDatabase.find().firstOrNull() }
 
@@ -28,7 +27,7 @@ object PickerToWarehouseConsumer {
             println(it)
             val product = Klaxon().parse<ProductInstanceModel>(it)
             if (product !== null) {
-                logProducer.log("Picked picking $it", INFO)
+                logAsRandomUser("Picker picking $it")
 
                 Thread.sleep(500) // simulate get period
 

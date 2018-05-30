@@ -1,16 +1,11 @@
 package com.flink.consumers.queries
 
 import com.flink.consumers.BaseConsumer
-import com.flink.gateway.Exchanges.LOG_EXCHANGE
 import com.flink.gateway.Exchanges.QUERY_EXCHANGE
 import com.flink.gateway.Queues
-import com.flink.gateway.Routes.EMPTY
 import com.flink.gateway.Routes.ITEM
 import com.flink.models.LogLevel.ERROR
-import com.flink.models.LogModel
 import com.flink.models.ProductModel
-import com.flink.models.UserModel
-import com.flink.models.UserModelType.PICKER
 import com.flink.models.interim.QueryModel
 import com.flink.utils.fromJson
 import com.google.gson.Gson
@@ -29,9 +24,12 @@ object QueryStartConsumer : BaseConsumer() {
 
             if (product !== null) {
                 val queryId = UUID.randomUUID()
+                log("Redistributing query for ${product.id}to all locations")
 
                 dbGateway.locationDatabase.find()
                         .forEach {
+                            log("Sending query to location ${it.id}")
+
                             mqGateway.publish(QUERY_EXCHANGE, QueryModel(
                                     product.id,
                                     queryId,
@@ -39,13 +37,7 @@ object QueryStartConsumer : BaseConsumer() {
                             ), ITEM)
                         }
             } else {
-                mqGateway.publish(LOG_EXCHANGE, LogModel(
-                        UserModel("queue", PICKER),
-                        "could not find product in database"
-                ).apply {
-                    level = ERROR
-                },
-                        EMPTY)
+                log("Could not find product ${item} in database", ERROR)
             }
         })
     }

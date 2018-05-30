@@ -1,6 +1,7 @@
 package com.flink.consumers.picking
 
 import com.beust.klaxon.Klaxon
+import com.flink.consumers.BaseConsumer
 import com.flink.gateway.DBGateway
 import com.flink.gateway.Exchanges.PRODUCT_EXCHANGE
 import com.flink.gateway.MQGateway
@@ -15,10 +16,7 @@ import com.flink.producers.logging.LoggingProducer
 /**
  * Reads a list that  was imported and redistributes it's individual components
  */
-object ImportManifestConsumer {
-    val mqGateway by lazy { MQGateway() }
-    val dbGateway by lazy { DBGateway() }
-    val logProducer by lazy { LoggingProducer() }
+object ImportManifestConsumer: BaseConsumer() {
     @JvmStatic
     fun main(args: Array<String> = emptyArray()) {
         mqGateway.consume(PRODUCT_IMPORT_MANIFEST, {
@@ -30,7 +28,7 @@ object ImportManifestConsumer {
                 mqGateway.publish(PRODUCT_EXCHANGE, it, PICKER_MOVEMENT)
             }
 
-            logProducer.log("Imported ${items.count()} products and redistributed it", INFO)
+            log("Imported ${items.count()} products and redistributed it", INFO)
         })
     }
 }
