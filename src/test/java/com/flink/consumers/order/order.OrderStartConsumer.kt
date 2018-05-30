@@ -6,7 +6,7 @@ import com.flink.gateway.MQGateway
 import com.flink.gateway.Routes
 import org.junit.Test
 
-class OrderStartConsumer {
+class OrderStartConsumerConsumer {
     val mqGateway = MQGateway()
     val dbGateway = DBGateway()
     @Test

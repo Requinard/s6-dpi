@@ -14,7 +14,7 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.find
 import org.litote.kmongo.updateOne
 
-object OrderPicker : BaseConsumer() {
+object OrderPickerConsumer : BaseConsumer() {
     @JvmStatic
     fun main(args: Array<String>) {
         mqGateway.consume(ORDER_ITEMS, {

@@ -9,7 +9,7 @@ import com.flink.utils.fromJson
 import com.google.gson.Gson
 import java.util.UUID
 
-object OrderStart: BaseConsumer() {
+object OrderStartConsumer: BaseConsumer() {
     @JvmStatic
     fun main(args: Array<String> = emptyArray()) {
         mqGateway.consume(ORDER_START, {
