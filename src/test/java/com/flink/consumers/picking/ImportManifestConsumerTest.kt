@@ -1,4 +1,4 @@
-package com.flink.consumers.product
+package com.flink.consumers.picking
 
 import com.flink.gateway.DBGateway
 import com.flink.gateway.Exchanges.PRODUCT_EXCHANGE

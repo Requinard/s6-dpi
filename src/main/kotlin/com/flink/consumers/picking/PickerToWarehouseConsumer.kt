@@ -1,4 +1,4 @@
-package com.flink.consumers.product
+package com.flink.consumers.picking
 
 import com.beust.klaxon.Klaxon
 import com.flink.gateway.DBGateway
@@ -9,7 +9,6 @@ import com.flink.models.LogLevel.INFO
 import com.flink.models.ProductInstanceModel
 import com.flink.producers.logging.LoggingProducer
 import org.litote.kmongo.updateOne
-import java.time.Instant
 import java.util.Random
 
 object PickerToWarehouseConsumer {
@@ -29,7 +28,7 @@ object PickerToWarehouseConsumer {
             println(it)
             val product = Klaxon().parse<ProductInstanceModel>(it)
             if (product !== null) {
-                logProducer.log("Picked product $it", INFO)
+                logProducer.log("Picked picking $it", INFO)
 
                 Thread.sleep(500) // simulate get period
 

@@ -1,4 +1,4 @@
-package com.flink.consumers.product
+package com.flink.consumers.picking
 
 import com.beust.klaxon.Klaxon
 import com.flink.gateway.DBGateway

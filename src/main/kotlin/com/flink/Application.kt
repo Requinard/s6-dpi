@@ -3,8 +3,8 @@ package com.flink
 import com.flink.consumers.logging.DatabaseLoggerConsumer
 import com.flink.consumers.logging.LogOutputConsumer
 import com.flink.consumers.logging.ProrityLogConsumer
-import com.flink.consumers.product.ImportManifestConsumer
-import com.flink.consumers.product.PickerToWarehouseConsumer
+import com.flink.consumers.picking.ImportManifestConsumer
+import com.flink.consumers.picking.PickerToWarehouseConsumer
 
 object Application {
     @JvmStatic
