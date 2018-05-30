@@ -16,7 +16,7 @@ import org.litote.kmongo.updateOne
 
 object OrderPickerConsumer : BaseConsumer() {
     @JvmStatic
-    fun main(args: Array<String>) {
+    fun main(args: Array<String> = emptyArray()) {
         mqGateway.consume(ORDER_ITEMS, {
             val order = Gson().fromJson<OrderModel>(it)
 
