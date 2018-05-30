@@ -14,12 +14,13 @@ import com.google.gson.Gson
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.div
 import org.litote.kmongo.eq
+import org.litote.kmongo.find
 import org.litote.kmongo.findOne
 import org.litote.kmongo.match
 
 object QueryItemConsumer : BaseConsumer() {
     @JvmStatic
-    fun main(args: Array<String>) {
+    fun main(args: Array<String> = emptyArray()) {
         mqGateway.consume(Queues.QUERY_ITEM, {
             // decode
             val queryModel = Gson().fromJson<QueryModel>(it)
@@ -34,14 +35,15 @@ object QueryItemConsumer : BaseConsumer() {
 
             // Retrieve
             val instances = dbGateway.productInstanceDatabase.aggregate<ProductInstanceModel>(
-                    match(ProductInstanceModel::warehouse / LocationModel::id eq location.id),
-                    match(ProductInstanceModel::product / ProductModel::id eq queryModel.product)
-            )
+                    match(ProductInstanceModel::warehouse eq location.id),
+                    match(ProductInstanceModel::product eq queryModel.product)
+            ).toList()
 
             queryModel.count = instances.count()
 
             // Republish
             mqGateway.publish(QUERY_EXCHANGE, queryModel, Routes.RETURN)
+            log("Query for ${queryModel.location} is done")
         })
     }
 }

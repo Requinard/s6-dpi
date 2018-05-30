@@ -15,7 +15,7 @@ import java.util.UUID
 
 object QueryStartConsumer : BaseConsumer() {
     @JvmStatic
-    fun main(args: Array<String>) {
+    fun main(args: Array<String> = emptyArray()) {
         mqGateway.consume(Queues.QUERY_START, {
             val item = Gson().fromJson<UUID>(it)
 

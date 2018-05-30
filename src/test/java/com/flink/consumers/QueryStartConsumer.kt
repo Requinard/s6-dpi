@@ -16,4 +16,11 @@ class QueryStartConsumer {
 
         mqGateway.publish(QUERY_EXCHANGE, product.id, SPLIT)
     }
+
+    @Test
+fun testMany(){
+        (1..100).forEach {
+            testOne()
+        }
+    }
 }

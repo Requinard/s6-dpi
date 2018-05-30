@@ -1,7 +1,9 @@
 package com.flink.models.interim
 
+import org.litote.kmongo.Data
 import java.util.UUID
 
+@Data
 data class QueryModel(
         val product: UUID,
         val queryId: UUID,

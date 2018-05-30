@@ -1,9 +1,11 @@
 package com.flink.models
 
+import org.litote.kmongo.Data
 import java.io.Serializable
 import java.time.Instant
 import java.util.UUID
 
+@Data
 data class LogModel(
         val user: UserModel,
         val message: String

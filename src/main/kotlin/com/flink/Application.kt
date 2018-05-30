@@ -5,6 +5,8 @@ import com.flink.consumers.logging.LogOutputConsumer
 import com.flink.consumers.logging.ProrityLogConsumer
 import com.flink.consumers.picking.ImportManifestConsumer
 import com.flink.consumers.picking.PickerToWarehouseConsumer
+import com.flink.consumers.queries.QueryItemConsumer
+import com.flink.consumers.queries.QueryStartConsumer
 
 object Application {
     @JvmStatic
@@ -15,7 +17,9 @@ object Application {
                 Runnable { ProrityLogConsumer.main() },
                 Runnable { ImportManifestConsumer.main() },
                 Runnable { PickerToWarehouseConsumer.main() },
-                Runnable { PickerToWarehouseConsumer.main() }
+                Runnable { PickerToWarehouseConsumer.main() },
+                Runnable { QueryStartConsumer.main() },
+                Runnable { QueryItemConsumer.main() }
         ).map { Thread(it) }.forEach { it.run() }
 
         while (true) {

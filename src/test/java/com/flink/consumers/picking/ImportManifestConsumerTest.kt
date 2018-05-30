@@ -20,11 +20,18 @@ class ImportManifestConsumerTest {
     }
 
     @Test
+    fun testOne() {
+        val item = dbGateway.productDatabase.find().shuffled().first()
+        val instance = ProductInstanceModel("NONE", item.id)
+        mqGateway.publish(PRODUCT_EXCHANGE, listOf(instance), IMPORT_MANIFEST)
+    }
+
+    @Test
     fun basicPublish() {
         val items = dbGateway.productDatabase.find()
 
         items.toList()
-                .map { model -> (0..100).map { ProductInstanceModel("NONE", model) } }
+                .map { model -> (0..100).map { ProductInstanceModel("NONE", model.id) } }
                 .map { mqGateway.publish(PRODUCT_EXCHANGE, it, IMPORT_MANIFEST) }
     }
 }

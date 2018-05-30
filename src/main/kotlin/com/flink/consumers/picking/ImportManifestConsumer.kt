@@ -11,6 +11,9 @@ import com.flink.models.InstanceStatus.PICKED_DELIVERY
 import com.flink.models.LogLevel.INFO
 import com.flink.models.ProductInstanceModel
 import com.flink.producers.logging.LoggingProducer
+import com.flink.utils.fromJson
+import com.google.gson.Gson
+import org.litote.kmongo.save
 
 
 /**
@@ -20,11 +23,11 @@ object ImportManifestConsumer: BaseConsumer() {
     @JvmStatic
     fun main(args: Array<String> = emptyArray()) {
         mqGateway.consume(PRODUCT_IMPORT_MANIFEST, {
-            val items = Klaxon().parseArray<ProductInstanceModel>(it) ?: emptyList()
+            val items = Gson().fromJson<List<ProductInstanceModel>>(it)?: emptyList()
 
             items.forEach {
                 it.status = PICKED_DELIVERY
-                dbGateway.productInstanceDatabase.insertOne(it)
+                dbGateway.productInstanceDatabase.save(it)
                 mqGateway.publish(PRODUCT_EXCHANGE, it, PICKER_MOVEMENT)
             }
 

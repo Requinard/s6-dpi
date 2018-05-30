@@ -2,13 +2,15 @@ package com.flink.consumers.picking
 
 import com.beust.klaxon.Klaxon
 import com.flink.consumers.BaseConsumer
-import com.flink.gateway.DBGateway
-import com.flink.gateway.MQGateway
 import com.flink.gateway.Queues.PRODUCT_PICK_TO_WAREHOUSE
 import com.flink.models.InstanceStatus.STORED
-import com.flink.models.LogLevel.INFO
 import com.flink.models.ProductInstanceModel
 import com.flink.producers.logging.LoggingProducer
+import com.flink.utils.fromJson
+import com.google.gson.Gson
+import org.litote.kmongo.eq
+import org.litote.kmongo.match
+import org.litote.kmongo.save
 import org.litote.kmongo.updateOne
 import java.util.Random
 
@@ -24,18 +26,17 @@ object PickerToWarehouseConsumer : BaseConsumer() {
     @JvmStatic
     fun main(args: Array<String> = emptyArray()) {
         mqGateway.consume(PRODUCT_PICK_TO_WAREHOUSE, {
-            println(it)
-            val product = Klaxon().parse<ProductInstanceModel>(it)
+            val product = Gson().fromJson<ProductInstanceModel>(it)
             if (product !== null) {
                 logAsRandomUser("Picker picking $it")
 
                 Thread.sleep(500) // simulate get period
 
-                product.location = "${random(alphabet)}-${ random(numbers)}"
-                product.warehouse = warehouse
+                product.location = "${random(alphabet)}-${random(numbers)}"
+                product.warehouse = warehouse?.id
                 product.status = STORED
 
-                dbGateway.productInstanceDatabase.insertOne(product)
+                dbGateway.productInstanceDatabase.updateOne(ProductInstanceModel::id eq product.id, product)
             }
         })
     }

@@ -1,6 +1,7 @@
 package com.flink.consumers
 
 import com.flink.gateway.DBGateway
+import com.flink.gateway.Exchanges.LOG_EXCHANGE
 import com.flink.gateway.Exchanges.QUERY_EXCHANGE
 import com.flink.gateway.MQGateway
 import com.flink.gateway.Routes
@@ -20,7 +21,7 @@ abstract class BaseConsumer {
             this.level = level
         }
 
-        mqGateway.publish(QUERY_EXCHANGE, log, Routes.EMPTY)
+        mqGateway.publish(LOG_EXCHANGE, log, Routes.EMPTY)
     }
 
     fun logAsRandomUser(message: String, logLevel: LogLevel = INFO){
