@@ -4,9 +4,11 @@ import com.beust.klaxon.Klaxon
 import com.flink.gateway.DBGateway
 import com.flink.gateway.MQGateway
 import com.flink.gateway.Queues.PRODUCT_PICK_TO_WAREHOUSE
+import com.flink.models.InstanceStatus.STORED
 import com.flink.models.LogLevel.INFO
 import com.flink.models.ProductInstanceModel
 import com.flink.producers.logging.LoggingProducer
+import org.litote.kmongo.updateOne
 import java.time.Instant
 import java.util.Random
 
@@ -33,8 +35,9 @@ object PickerToWarehouseConsumer {
 
                 product.location = "${random(alphabet)}-${ random(numbers)}"
                 product.warehouse = warehouse
+                product.status = STORED
 
-                dbGateway.productInstanceDatabase.insertOne(product)
+                dbGateway.productInstanceDatabase.updateOne(product)
             }
         })
     }
